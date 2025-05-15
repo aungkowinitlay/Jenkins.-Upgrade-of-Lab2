@@ -1,14 +1,12 @@
 version: '3.8'
 services:
   flask-backend:
-    image: aungkowin/my-backend:latest
+    image: aungkowin/flask-backend:latest
     ports:
       - "5000:5000"
-    environment:
-      - FLASK_ENV=production
+    container_name: flask-backend
   nginx-frontend:
-    image: aungkowin/my-frontend:latest
+    image: aungkowin/nginx-frontend:latest
     ports:
       - "80:80"
-    depends_on:
-      - flask-backend
+    container_name: nginx-frontend

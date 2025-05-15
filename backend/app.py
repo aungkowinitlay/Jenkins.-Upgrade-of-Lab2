@@ -2,11 +2,7 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "http://192.168.1.7"}})
-
-@app.route("/", methods=["GET"])
-def health():
-    return jsonify({"status": "healthy"})
+CORS(app, resources={r"/api/*": {"origins": "http://192.168.1.8"}})
 
 @app.route("/api/message", methods=["GET"])
 def get_message():
