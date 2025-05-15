@@ -19,9 +19,9 @@ pipeline {
             }
         }
         stage('Build Docker Images') {
-            agent { label 'VM1' }
             parallel {
                 stage('Build Backend Image') {
+                    agent { label 'VM1' }
                     steps {
                         sh """
                             docker build -t ${BACKEND_IMAGE} -f backend/Dockerfile ./backend
@@ -29,6 +29,7 @@ pipeline {
                     }
                 }
                 stage('Build Frontend Image') {
+                    agent { label 'VM1' }
                     steps {
                         sh """
                             docker build -t ${FRONTEND_IMAGE} -f frontend/Dockerfile ./frontend
@@ -38,9 +39,9 @@ pipeline {
             }
         }
         stage('Test Images') {
-            agent { label 'VM1' }
             parallel {
                 stage('Test Backend Image') {
+                    agent { label 'VM1' }
                     steps {
                         sh """
                             echo "Running Backend Tests..."
@@ -49,6 +50,7 @@ pipeline {
                     }
                 }
                 stage('Test Frontend Image') {
+                    agent { label 'VM1' }
                     steps {
                         sh """
                             echo "Running Frontend Tests..."
