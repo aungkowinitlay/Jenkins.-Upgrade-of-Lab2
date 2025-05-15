@@ -103,7 +103,7 @@ pipeline {
                             else
                                 echo "No backend container found"
                             fi
-                            for i in {1..3}; do
+                            for i in 1 2 3; do
                                 curl --fail http://localhost:5000/api/message && break
                                 echo "Health check attempt \$i failed, retrying..."
                                 sleep 5
@@ -128,7 +128,7 @@ pipeline {
                             else
                                 echo "No frontend container found"
                             fi
-                            for i in {1..3}; do
+                            for i in 1 2 3; do
                                 curl --fail http://localhost:80 && break
                                 echo "Health check attempt \$i failed, retrying..."
                                 sleep 5
