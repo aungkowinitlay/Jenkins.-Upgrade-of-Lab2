@@ -12,7 +12,7 @@ pipeline {
             agent { label 'VM1' }
             steps {
                 git branch: 'main', url: 'https://github.com/aungkowinitlay/Jenkins.-Upgrade-of-Lab2.git'
-                stash includes: 'docker-compose.yml', name: 'compose-file'
+                stash includes: 'docker-compose.yml,backend/*,frontend/*', name: 'app-files'
             }
         }
         stage('Test VM2 Connection') {
@@ -89,7 +89,7 @@ pipeline {
                 stage('Deploy Backend') {
                     agent { label 'VM3' }
                     steps {
-                        unstash 'compose-file'
+                        unstash 'app-files'
                         sh """
                             if [ ! -f docker-compose.yml ]; then echo "Error: docker-compose.yml not found in workspace"; exit 1; fi
                             docker rm -f backend-container flask-backend backend-service || true
@@ -99,7 +99,7 @@ pipeline {
                             docker ps -a
                             docker logs backend-container || true
                             for i in {1..3}; do
-                                curl --fail http://localhost:5000 && break
+                                curl --fail http://localhost:5000/api/message && break
                                 echo "Health check attempt \$i failed, retrying..."
                                 sleep 5
                             done || echo "Health check failed after 3 attempts, verify backend service manually"
@@ -109,7 +109,7 @@ pipeline {
                 stage('Deploy Frontend') {
                     agent { label 'VM2' }
                     steps {
-                        unstash 'compose-file'
+                        unstash 'app-files'
                         sh """
                             if [ ! -f docker-compose.yml ]; then echo "Error: docker-compose.yml not found in workspace"; exit 1; fi
                             docker rm -f frontend-container nginx-frontend frontend-service || true
