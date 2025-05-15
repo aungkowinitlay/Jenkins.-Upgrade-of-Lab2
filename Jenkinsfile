@@ -92,13 +92,17 @@ pipeline {
                         unstash 'compose-file'
                         sh """
                             if [ ! -f docker-compose.yml ]; then echo "Error: docker-compose.yml not found in workspace"; exit 1; fi
-                            docker rm -f backend-container || true
+                            docker rm -f backend-container flask-backend backend-service || true
                             docker-compose -f docker-compose.yml down --remove-orphans || true
                             docker-compose -f docker-compose.yml up -d --force-recreate flask-backend
-                            sleep 20
+                            sleep 30
                             docker ps -a
                             docker logs backend-container || true
-                            curl --fail http://localhost:5000 || echo "Health check failed, verify backend service manually"
+                            for i in {1..3}; do
+                                curl --fail http://localhost:5000 && break
+                                echo "Health check attempt \$i failed, retrying..."
+                                sleep 5
+                            done || echo "Health check failed after 3 attempts, verify backend service manually"
                         """
                     }
                 }
@@ -108,13 +112,17 @@ pipeline {
                         unstash 'compose-file'
                         sh """
                             if [ ! -f docker-compose.yml ]; then echo "Error: docker-compose.yml not found in workspace"; exit 1; fi
-                            docker rm -f frontend-container || true
+                            docker rm -f frontend-container nginx-frontend frontend-service || true
                             docker-compose -f docker-compose.yml down --remove-orphans || true
                             docker-compose -f docker-compose.yml up -d --force-recreate nginx-frontend
-                            sleep 20
+                            sleep 30
                             docker ps -a
                             docker logs frontend-container || true
-                            curl --fail http://localhost:80 || echo "Health check failed, verify frontend service manually"
+                            for i in {1..3}; do
+                                curl --fail http://localhost:80 && break
+                                echo "Health check attempt \$i failed, retrying..."
+                                sleep 5
+                            done || echo "Health check failed after 3 attempts, verify frontend service manually"
                         """
                     }
                 }
