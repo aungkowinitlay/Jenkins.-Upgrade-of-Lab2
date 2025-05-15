@@ -92,12 +92,17 @@ pipeline {
                         unstash 'app-files'
                         sh """
                             if [ ! -f docker-compose.yml ]; then echo "Error: docker-compose.yml not found in workspace"; exit 1; fi
-                            docker rm -f backend-container flask-backend backend-service || true
                             docker-compose -f docker-compose.yml down --remove-orphans || true
+                            docker rm -f \$(docker ps -a -q -f name=upgradelab2_flask-backend) || true
                             docker-compose -f docker-compose.yml up -d --force-recreate flask-backend
                             sleep 30
                             docker ps -a
-                            docker logs backend-container || true
+                            BACKEND_CONTAINER=\$(docker ps -q -f name=upgradelab2_flask-backend)
+                            if [ -n "\$BACKEND_CONTAINER" ]; then
+                                docker logs \$BACKEND_CONTAINER || true
+                            else
+                                echo "No backend container found"
+                            fi
                             for i in {1..3}; do
                                 curl --fail http://localhost:5000/api/message && break
                                 echo "Health check attempt \$i failed, retrying..."
@@ -112,12 +117,17 @@ pipeline {
                         unstash 'app-files'
                         sh """
                             if [ ! -f docker-compose.yml ]; then echo "Error: docker-compose.yml not found in workspace"; exit 1; fi
-                            docker rm -f frontend-container nginx-frontend frontend-service || true
                             docker-compose -f docker-compose.yml down --remove-orphans || true
+                            docker rm -f \$(docker ps -a -q -f name=upgradelab2_nginx-frontend) || true
                             docker-compose -f docker-compose.yml up -d --force-recreate nginx-frontend
                             sleep 30
                             docker ps -a
-                            docker logs frontend-container || true
+                            FRONTEND_CONTAINER=\$(docker ps -q -f name=upgradelab2_nginx-frontend)
+                            if [ -n "\$FRONTEND_CONTAINER" ]; then
+                                docker logs \$FRONTEND_CONTAINER || true
+                            else
+                                echo "No frontend container found"
+                            fi
                             for i in {1..3}; do
                                 curl --fail http://localhost:80 && break
                                 echo "Health check attempt \$i failed, retrying..."
