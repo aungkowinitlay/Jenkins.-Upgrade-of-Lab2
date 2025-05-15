@@ -95,7 +95,7 @@ pipeline {
                             docker-compose -f docker-compose.yml down --remove-orphans || true
                             docker-compose -f docker-compose.yml up -d --force-recreate flask-backend
                             sleep 15
-                            curl --fail http://localhost:5000 || echo "Health check failed, verify backend service manually"
+                            curl --fail http://192.168.1.8:5000 || echo "Health check failed, verify backend service manually"
                         """
                     }
                 }
@@ -108,7 +108,7 @@ pipeline {
                             docker-compose -f docker-compose.yml down --remove-orphans || true
                             docker-compose -f docker-compose.yml up -d --force-recreate nginx-frontend
                             sleep 15
-                            curl --fail http://localhost:80 || echo "Health check failed, verify frontend service manually"
+                            curl --fail http://192.168.1.7:80 || echo "Health check failed, verify frontend service manually"
                         """
                     }
                 }
