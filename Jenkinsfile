@@ -92,10 +92,13 @@ pipeline {
                         unstash 'compose-file'
                         sh """
                             if [ ! -f docker-compose.yml ]; then echo "Error: docker-compose.yml not found in workspace"; exit 1; fi
+                            docker rm -f backend-container || true
                             docker-compose -f docker-compose.yml down --remove-orphans || true
                             docker-compose -f docker-compose.yml up -d --force-recreate flask-backend
-                            sleep 15
-                            curl --fail http://192.168.1.8:5000 || echo "Health check failed, verify backend service manually"
+                            sleep 20
+                            docker ps -a
+                            docker logs backend-container || true
+                            curl --fail http://localhost:5000 || echo "Health check failed, verify backend service manually"
                         """
                     }
                 }
@@ -105,10 +108,13 @@ pipeline {
                         unstash 'compose-file'
                         sh """
                             if [ ! -f docker-compose.yml ]; then echo "Error: docker-compose.yml not found in workspace"; exit 1; fi
+                            docker rm -f frontend-container || true
                             docker-compose -f docker-compose.yml down --remove-orphans || true
                             docker-compose -f docker-compose.yml up -d --force-recreate nginx-frontend
-                            sleep 15
-                            curl --fail http://192.168.1.7:80 || echo "Health check failed, verify frontend service manually"
+                            sleep 20
+                            docker ps -a
+                            docker logs frontend-container || true
+                            curl --fail http://localhost:80 || echo "Health check failed, verify frontend service manually"
                         """
                     }
                 }
