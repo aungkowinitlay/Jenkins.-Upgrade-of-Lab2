@@ -24,13 +24,13 @@ pipeline {
                 stage('Build Backend Image') {
                     agent { label 'VM1' }
                     steps {
-                        sh "docker buildx build -t ${BACKEND_IMAGE} -f backend/Dockerfile ./backend --load"
+                        sh "docker  build -t ${BACKEND_IMAGE} -f backend/Dockerfile ./backend"
                     }
                 }
                 stage('Build Frontend Image') {
                     agent { label 'VM1' }
                     steps {
-                        sh "docker buildx build -t ${FRONTEND_IMAGE} -f frontend/Dockerfile ./frontend --load"
+                        sh "docker  build -t ${FRONTEND_IMAGE} -f frontend/Dockerfile ./frontend"
                     }
                 }
             }
