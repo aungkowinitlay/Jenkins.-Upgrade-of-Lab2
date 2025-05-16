@@ -20,14 +20,15 @@ pipeline {
             }
         }
         stage('Build Images') {
-            agent { label 'VM1' }
             parallel {
                 stage('Build Backend Image') {
+                    agent { label 'VM1' }
                     steps {
                         sh "docker build -t ${BACKEND_IMAGE} -f backend/Dockerfile ./backend"
                     }
                 }
                 stage('Build Frontend Image') {
+                    agent { label 'VM1' }
                     steps {
                         sh "docker build -t ${FRONTEND_IMAGE} -f frontend/Dockerfile ./frontend"
                     }
