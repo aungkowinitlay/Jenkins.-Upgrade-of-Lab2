@@ -38,7 +38,7 @@ pipeline {
         stage('Test Backend') {
             agent { label 'VM1' }
             steps {
-                sh "docker run --rm ${BACKEND_IMAGE} pytest"
+                sh "docker run --rm -e PYTHONPATH=/app ${BACKEND_IMAGE} pytest"
             }
         }
         stage('Login to Docker Hub') {
